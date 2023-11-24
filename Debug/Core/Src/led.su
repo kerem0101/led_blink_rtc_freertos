@@ -1,0 +1,2 @@
+../Core/Src/led.c:10:6:led_effect_stop	8	static
+../Core/Src/led.c:14:6:led_effect	24	static
