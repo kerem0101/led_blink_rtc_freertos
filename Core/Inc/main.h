@@ -65,8 +65,11 @@ extern xTaskHandle handle_rtc_task;
 extern QueueHandle_t q_data;
 extern QueueHandle_t q_print;
 
+extern TimerHandle_t rtc_timer;
+
 extern state_t curr_state;
 
+extern RTC_HandleTypeDef hrtc;
 extern UART_HandleTypeDef huart2;
 /* USER CODE END ET */
 
@@ -84,6 +87,9 @@ extern UART_HandleTypeDef huart2;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+
+//uint8_t getNumber(uint8_t* p, int8_t len);
+
 void led_task(void* param);
 
 void rtc_task(void* param);
@@ -95,6 +101,12 @@ void cmd_task(void* param);
 void led_effect_stop(void);
 
 void led_effect(int8_t num);
+
+//void show_time_date(void);
+void show_time_date_itm(void);
+void rtc_configure_time(RTC_TimeTypeDef *time);
+void rtc_configure_date(RTC_DateTypeDef *date);
+int validate_rtc_information(RTC_TimeTypeDef *time , RTC_DateTypeDef *date);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

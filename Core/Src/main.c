@@ -74,7 +74,9 @@ volatile uint8_t user_data;
 
 state_t curr_state = sMainMenu;
 
-static const char *msg_inv = "////Invalid option////\n";
+static const char *msg_inv = "////Invalid option////\n\r";
+
+TimerHandle_t rtc_timer;
 
 /* USER CODE END 0 */
 
@@ -110,13 +112,13 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
-  xTaskCreate(cmd_task, "cmd_task", 128, NULL, osPriorityNormal, &handle_cmd_task);
+  xTaskCreate(cmd_task, "cmd_task", 64, NULL, osPriorityNormal, &handle_cmd_task);
 
-  xTaskCreate(print_task, "print_task", 128, NULL, osPriorityNormal, &handle_print_task);
+  xTaskCreate(print_task, "print_task", 64, NULL, osPriorityNormal, &handle_print_task);
 
-  xTaskCreate(led_task, "led_task", 128, NULL, osPriorityNormal, &handle_led_task);
+  xTaskCreate(led_task, "led_task", 64, NULL, osPriorityNormal, &handle_led_task);
 
-//  xTaskCreate(rtc_task, "rtc_task", 128, NULL, osPriorityNormal, &handle_rtc_task);
+  xTaskCreate(rtc_task, "rtc_task", 250, NULL, osPriorityNormal, &handle_rtc_task);
 
   q_data = xQueueCreate(10, sizeof(char));
 
@@ -144,7 +146,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, menu_task, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, menu_task, osPriorityNormal, 0, 64);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -362,22 +364,23 @@ void menu_task(void const * argument)
 
 	int option;
 
-	const char* msg_menu = "\n========================\n"
-								"|         Menu         |\n"
-								"========================\n"
-									"LED effect    ----> 0\n"
-									"Date and time ----> 1\n"
-									"Exit          ----> 2\n"
-									"Enter your choice here : ";
+	const char* msg_menu = "\n\r========================\n\r"
+								"|         Menu         |\n\r"
+								"========================\n\r"
+									"LED effect    ----> 0\n\r"
+									"Date and time ----> 1\n\r"
+									"Exit          ----> 2\n\r"
+									"Enter your choice here : \n\r";
 
 
 
   /* Infinite loop */
   for(;;)
   {
-    xQueueSend(q_print,&msg_menu,portMAX_DELAY);
+	xQueueSend(q_print,&msg_menu,portMAX_DELAY);
 
-    xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
+	xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
+
 
     cmd = (command_t *)cmd_addr;
 
